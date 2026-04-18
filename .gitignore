@@ -1,0 +1,8 @@
+@echo -e "bin/
+*.exe
+*.o
+*.a
+.env
+node_modules/
+.DS_Store
+*.pyc"
