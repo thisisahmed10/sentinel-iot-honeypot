@@ -18,8 +18,13 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifndef BACKEND_IP
 #define BACKEND_IP   "192.168.1.10"
+#endif
+
+#ifndef BACKEND_PORT
 #define BACKEND_PORT "5000"
+#endif
 #define CONNECT_TIMEOUT_SEC 2
 #define SEND_TIMEOUT_SEC 2
 

@@ -1,0 +1,22 @@
+
+
+
+
+
+clear
+
+
+pio run -t clean
+pio run -t erase
+
+
+pio run --target upload
+pio run --target buildfs
+pio run --target uploadfs
+pio device monitor -b 115200
+
+
+
+
+
+

@@ -1,61 +1,62 @@
-# pi_bait — Raspberry Pi Honeypot Bait
+# Sentinel-IoT Honeypot Suite
 
-Lightweight C-based honeypot for Raspberry Pi 4. Implements a `select()`-based multiplexer that listens on decoy ports (default: 23 and 80), captures initial payloads, logs events locally, and forwards JSON records to a central Go backend over TCP.
+This repository now contains the full Sentinel-IoT stack in one place:
 
-Quick start
+- `src/` and `hardware/` hold the Raspberry Pi honeypot bait.
+- `network-programming-project/` holds the ESP32 dashboard and captive portal.
+- `honybotrpa/` holds the Go CSV logger and the Python RPA bot.
 
-Prerequisites: `gcc`, build-essential, network access to your backend. Binding ports <1024 requires root or an alternative (authbind or using high ports for testing).
+Project flow
 
-Build:
+1. The Raspberry Pi honeypot listens on decoy services, captures the first payload, and forwards a JSON `AttackEvent` to the backend.
+2. The backend stores logs and exposes them through HTTP.
+3. The ESP32 dashboard can log its own page-hit/login events to the backend and expose control routes.
+4. The RPA module consumes CSV attack records and automates a browser workflow for reporting or simulation.
+
+Raspberry Pi honeypot
+
+Build the C component from the repository root:
 
 ```bash
 make
 ```
 
-Run (as root to bind 23/80):
+Run it with root privileges if you need to bind ports 23 and 80:
 
 ```bash
 sudo ./bin/pi_bait
 ```
 
-Configuration
-
-- Backend host/port and logfile are set in `hardware/include/honeypot.h` and `src/backend_stub.c` — update `BACKEND_IP` and `BACKEND_PORT` to point at your aggregator.
-- The listened ports are defined in `src/main.c` under the `ports` array.
-
-Logs
-
-- Events are appended to `/var/log/pi_bait.log` by default in the earlier local-only version of the codebase; the current sender writes directly to the backend.
-
-Systemd unit (example)
-
-Save this as `/etc/systemd/system/pi_bait.service` and adjust `ExecStart` to the installed binary path.
-
-```ini
-[Unit]
-Description=pi_bait honeypot
-After=network.target
-
-[Service]
-Type=simple
-User=root
-ExecStart=/home/ahmed/sentinel-iot-honeypot/bin/pi_bait
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Testing
-
-- From the Pi itself, trigger a connection and send a test payload:
+The backend target can be overridden at compile time:
 
 ```bash
-printf "HELLO" | nc 127.0.0.1 80
-curl -v http://127.0.0.1/
+make CFLAGS='-std=c11 -Wall -Wextra -O2 -g -DBACKEND_IP="\"192.168.1.10\"" -DBACKEND_PORT="\"5000\""'
 ```
 
-Notes and next steps
+ESP32 dashboard
 
-- The implementation follows a minimal UNP-style approach (BSD sockets + `select()`).
-- Consider running the binary under a dedicated unprivileged user and using `authbind` or `setcap` if you must avoid full root.
+The integrated ESP32 project lives under `network-programming-project/` and keeps the PlatformIO layout intact.
+
+Useful files:
+
+- `network-programming-project/platformio.ini`
+- `network-programming-project/src/main.cpp`
+- `network-programming-project/data/index.html`
+- `network-programming-project/data/admin.html`
+- `network-programming-project/data/config.json`
+
+RPA tooling
+
+The RPA project is preserved under `honybotrpa/RPA_Project/`.
+
+Useful files:
+
+- `honybotrpa/RPA_Project/backend/main.go`
+- `honybotrpa/RPA_Project/backend/attacks.csv`
+- `honybotrpa/RPA_Project/bot/report_bot.py`
+
+Notes
+
+- The Node backend from the dashboard project accepts POST `/log` and GET `/logs`.
+- The Go backend in the RPA tree is a simple CSV simulator, not a live bridge.
+- The ESP32 control button currently toggles the LED locally; there is no packet-filter kill switch implemented yet.

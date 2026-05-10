@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ESP32 Dashboard" />
+    <meta name="keywords" content="ESP32, Dashboard, Control Panel" />
+    <meta name="author" content="Your Name" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="google" content="notranslate" />
+    <meta name="google" content="notranslate" />
+    <title>ESP32 Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h2>Device Login</h2>
+
+    <form action="/api/login" method="POST">
+      <input name="username" type="text" placeholder="Username" /><br />
+      <input name="password" type="password" placeholder="Password" /><br />
+      <button type="button">Login</button>
+    </form>
+  </body>
+</html>

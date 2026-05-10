@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESP32 Admin Panel</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  
+  <body>
+    <h2>Admin Panel</h2>
+
+    <!-- Backend Configuration Section -->
+    <div class="config-section">
+      <h3>Logging Configuration</h3>
+      <p>Current Backend: <strong id="current-url">%BACKEND_URL%</strong></p>
+      <input
+        type="text"
+        id="new-url"
+        placeholder="http://192.168.4.2:5000/log"
+      />
+      <br />
+      <button type="button" onclick="updateBackend()">
+        Update Backend URL
+      </button>
+    </div>
+
+    <hr />
+
+    <!-- Login Form -->
+    <div class="config-section">
+      <h3>System Login</h3>
+      <form action="/api/login" method="POST">
+        <input name="username" type="text" placeholder="Username" /><br />
+        <input name="password" type="password" placeholder="Password" /><br />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <script>
+      function updateBackend() {
+        const url = document.getElementById("new-url").value;
+        if (!url) {
+          alert("Please enter a URL");
+          return;
+        }
+
+        fetch("/admin?url=" + encodeURIComponent(url))
+          .then((response) => response.text())
+          .then((data) => {
+            alert(data);
+            document.getElementById("current-url").innerText = url;
+          })
+          .catch((err) => alert("Error updating URL"));
+      }
+    </script>
+  </body>
+</html>
