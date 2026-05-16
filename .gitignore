@@ -1,2 +1,24 @@
 bin/
 *.o
+
+# Go backend runtime artifacts
+backend/logs.json
+
+# ESP32 PlatformIO artifacts
+esp/.pio/
+esp/.pioenvs/
+esp/.piolibdeps/
+
+# RPi build artifacts
+rpi/bin/
+
+# Python testing artifacts
+testing/.venv/
+testing/__pycache__/
+__pycache__/
+*.pyc
+
+# General build
+build/
+*.exe
+*.elf

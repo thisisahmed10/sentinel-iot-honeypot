@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ESP32 Security Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Security Command</h1>
+      <div id="top-stats">
+        <div class="stat-card">Total Attacks<br/><span id="totalAttacks">0</span></div>
+        <div class="stat-card">Current RPS<br/><span id="currentRps">0</span></div>
+        <div class="stat-card">Active Blocks<br/><span id="activeBlocks">0</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="controls">
+        <div class="control-row">
+          <label class="switch">
+            <input type="checkbox" id="ddosToggle">
+            <span class="slider"></span>
+          </label>
+          <span>DDoS Shield</span>
+          <div id="systemStatus">Status: <strong id="pulse">Unknown</strong></div>
+          <div id="deviceHealth">Uptime: <span id="uptime">0s</span> RSSI: <span id="rssi">N/A</span> Free heap: <span id="heap">N/A</span></div>
+        </div>
+      </section>
+
+      <section id="live">
+        <h2>Live Threat Intelligence</h2>
+        <div id="live-table-wrap">
+          <table id="attackTable">
+            <thead><tr><th>Source IP</th><th>Target Port</th><th>Country</th><th>Timestamp</th><th>Payload</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="charts">
+        <h2>Real-Time Metrics</h2>
+        <canvas id="rpsChart" height="100"></canvas>
+        <canvas id="blockedChart" height="100"></canvas>
+      </section>
+
+      <section id="rpa">
+        <h2>RPA & Reporting</h2>
+        <div>Reports Filed Today: <span id="reportsCount">0</span></div>
+        <div id="lastReport">RPA: N/A</div>
+      </section>
+    </main>
+
+    <!-- modal -->
+    <div id="modal" class="hidden">
+      <div id="modalContent">
+        <button id="closeModal">Close</button>
+        <pre id="payloadPreview"></pre>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ESP32 Dashboard" />
+    <meta name="keywords" content="ESP32, Dashboard, Control Panel" />
+    <meta name="author" content="Your Name" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="google" content="notranslate" />
+    <meta name="google" content="notranslate" />
+    <title>ESP32 Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h1>ESP32 Control Panel</h1>
+
+    <p>Device IP (AP): <strong>%IP_ADDRESS_AP%</strong></p>
+    <p>Device IP (STA): <strong>%IP_ADDRESS_STA%</strong></p>
+
+    <div id="alertBox" class="alert-box hidden"></div>
+
+    <button type="button" onclick="toggleLED()">Toggle LED</button>
+
+    <p id="status">Status: Unknown</p>
+
+    <script src="script.js"></script>
+  </body>
+</html>

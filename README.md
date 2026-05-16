@@ -1,62 +1,87 @@
 # Sentinel-IoT Honeypot Suite
 
-This repository now contains the full Sentinel-IoT stack in one place:
+This repository is organized into four top-level folders:
 
-- `src/` and `hardware/` hold the Raspberry Pi honeypot bait.
-- `network-programming-project/` holds the ESP32 dashboard and captive portal.
-- `honybotrpa/` holds the Go CSV logger and the Python RPA bot.
+- `esp/` - the ESP32 dashboard and captive portal
+- `rpi/` - the Raspberry Pi honeypot running on Ubuntu 24
+- `backend/` - the shared Go backend used by the honeypot, ESP32, and testing tools
+- `testing/` - the Windows attack simulator and RPA reporting bot
 
-Project flow
+## Flow
 
-1. The Raspberry Pi honeypot listens on decoy services, captures the first payload, and forwards a JSON `AttackEvent` to the backend.
-2. The backend stores logs and exposes them through HTTP.
-3. The ESP32 dashboard can log its own page-hit/login events to the backend and expose control routes.
-4. The RPA module consumes CSV attack records and automates a browser workflow for reporting or simulation.
+1. The Raspberry Pi honeypot listens on decoy services and forwards attack events to the Go backend.
+2. The Go backend stores the events and exposes them through HTTP and WebSocket endpoints.
+3. The ESP32 dashboard reads and posts events using the same backend contract.
+4. The Windows testing tools can simulate an attack and replay the stored events for reporting.
 
-Raspberry Pi honeypot
+## Backend
 
-Build the C component from the repository root:
+Run the backend on the Ubuntu 24 machine that will host the shared log service:
 
-```bash
+```powershell
+cd backend
+go mod tidy
+go run .
+```
+
+The backend exposes:
+
+- `POST /log`
+- `GET /logs`
+- `GET /latest`
+- `WS /ws`
+
+## Raspberry Pi Honeypot
+
+Build the honeypot from the `rpi/` folder:
+
+```powershell
+cd rpi
 make
 ```
 
-Run it with root privileges if you need to bind ports 23 and 80:
+On Ubuntu 24, run the generated binary from `rpi/bin/` after building. If the honeypot needs to bind privileged ports, run it with the appropriate privileges.
 
-```bash
-sudo ./bin/pi_bait
-```
+The backend target is still configurable at build time through `BACKEND_IP` and `BACKEND_PORT` if the Ubuntu host is not the default in `rpi/src/backend_client.c`.
 
-The backend target can be overridden at compile time:
+## ESP32 Dashboard
 
-```bash
-make CFLAGS='-std=c11 -Wall -Wextra -O2 -g -DBACKEND_IP="\"192.168.1.10\"" -DBACKEND_PORT="\"5000\""'
-```
-
-ESP32 dashboard
-
-The integrated ESP32 project lives under `network-programming-project/` and keeps the PlatformIO layout intact.
+The PlatformIO project lives in `esp/`.
 
 Useful files:
 
-- `network-programming-project/platformio.ini`
-- `network-programming-project/src/main.cpp`
-- `network-programming-project/data/index.html`
-- `network-programming-project/data/admin.html`
-- `network-programming-project/data/config.json`
+- `esp/platformio.ini`
+- `esp/src/main.cpp`
+- `esp/data/index.html`
+- `esp/data/admin.html`
+- `esp/data/config.json`
 
-RPA tooling
+The ESP32 backend URL is configured from the admin page or `esp/data/config.json`.
 
-The RPA project is preserved under `honybotrpa/RPA_Project/`.
+## Testing
 
-Useful files:
+The `testing/` folder contains the Windows attack simulator and the Playwright reporting bot.
 
-- `honybotrpa/RPA_Project/backend/main.go`
-- `honybotrpa/RPA_Project/backend/attacks.csv`
-- `honybotrpa/RPA_Project/bot/report_bot.py`
+Windows attack simulation:
 
-Notes
+```powershell
+cd testing
+$env:BACKEND_URL = "http://192.168.1.50:5000/log"
+.\attack_windows.ps1 -SrcIp "10.0.0.23" -SrcPort 5555 -DstPort 23 -Payload "telnet probe"
+```
 
-- The Node backend from the dashboard project accepts POST `/log` and GET `/logs`.
-- The Go backend in the RPA tree is a simple CSV simulator, not a live bridge.
-- The ESP32 control button currently toggles the LED locally; there is no packet-filter kill switch implemented yet.
+RPA reporting bot:
+
+```powershell
+cd testing
+pip install -r requirements.txt
+playwright install
+$env:BACKEND_URL = "http://192.168.1.50:5000/logs"
+python .\report_bot.py
+```
+
+## Notes
+
+- Set `BACKEND_URL` to the Ubuntu 24 host that runs the Go backend when testing from Windows.
+- `testing/report_bot.py` reads from `GET /logs`.
+- `testing/attack_windows.ps1` posts a JSON attack event to `POST /log`.
