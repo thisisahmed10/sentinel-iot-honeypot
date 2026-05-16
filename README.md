@@ -85,3 +85,14 @@ python .\report_bot.py
 - Set `BACKEND_URL` to the Ubuntu 24 host that runs the Go backend when testing from Windows.
 - `testing/report_bot.py` reads from `GET /logs`.
 - `testing/attack_windows.ps1` posts a JSON attack event to `POST /log`.
+
+## Our Team
+
+| Name               | GitHub Handle                                      | Email                             |
+| :----------------- | :------------------------------------------------- | :-------------------------------- |
+| Ahmed Abdul-Kareem | [@Ahmed1357900](https://github.com/Ahmed1357900)   | ahmed.abdelkrim492@eng.aun.edu.eg |
+| Ahmed Gamal        | [@jmal07482-lab](https://github.com/jmal07482-lab) | Jmal07482@gmail.com               |
+| Ahmed Hasan        | [@thisisahmed10](https://github.com/thisisahmed10) | ahmed.h.ahmed13@outlook.com       |
+| Ahmed Mostafa      | [@A7MEDMBS](https://github.com/A7MEDMBS)           | ahmedabubakr60@gmail.com          |
+| Ahmed Yosry        | [@Ahmed-1y](https://github.com/Ahmed-1y)           | Ahmed.Yousry672@eng.aun.edu.eg    |
+| Antony Ghayes      | [@Antony-Gh](https://github.com/Antony-Gh)         | knkmam05@gmail.com                |
